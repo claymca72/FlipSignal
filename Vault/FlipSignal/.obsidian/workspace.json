@@ -1,0 +1,222 @@
+{
+  "main": {
+    "id": "e00e5fcf5b5e1f83",
+    "type": "split",
+    "children": [
+      {
+        "id": "617da9d5ee4b7fe0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "634c279bcdd0c6c5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Listing Signal Build Tracker.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Listing Signal Build Tracker"
+            }
+          }
+        ]
+      },
+      {
+        "id": "025a343b4efc8247",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "94c1c7e4f2941cf3",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "929ee448d6182cb9",
+    "type": "split",
+    "children": [
+      {
+        "id": "7cdddfb5aff3b2f7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4845d4615768d988",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "57b7ec4b5e5b7dc8",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "a32552223c850874",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "799f48b5c9d84c9e",
+    "type": "split",
+    "children": [
+      {
+        "id": "30376393cf8537e5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a88f813355cd73dd",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Database State.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Database State"
+            }
+          },
+          {
+            "id": "243430544c01e0e0",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Database State.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Database State"
+            }
+          },
+          {
+            "id": "9291ca949ede29db",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "4b8841f2f961eca1",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "8bb1acb035d4ea3b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Database State.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Database State"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "634c279bcdd0c6c5",
+  "lastOpenFiles": [
+    "Vision Model Bakeoff Plan.md",
+    "Listing Signal Spec.md",
+    "Listing Signal Build Tracker.md",
+    "Source Documents.md",
+    "Welcome.md",
+    "Architecture Notes.md",
+    "Product Spec.md",
+    "Setup Runbook.md",
+    "Database State.md",
+    "Pass 1 Audit.md",
+    "Logs/Progress.md",
+    "Logs/Issues.md",
+    "Logs/Decisions.md",
+    "Logs",
+    "Decisions and Next Steps.md",
+    "Code Map.md",
+    "Home.md"
+  ]
+}

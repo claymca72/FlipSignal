@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PlanTier {
+  FREE
+  PRO
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  CANCELED
+  PAST_DUE
+}
+
+enum Marketplace {
+  EBAY
+  STOCKX
+  GOAT
+  FACEBOOK_MARKETPLACE
+}
+
+enum LeadInteractionStatus {
+  SAVED
+  SKIPPED
+  BOUGHT
+}
+
+enum DealStatus {
+  SAVED
+  PURCHASED
+  LISTED
+  SOLD
+}
+
+enum AlertFrequency {
+  DAILY
+  INSTANT
+}
+
+enum ListingCondition {
+  NEW
+  LIKE_NEW
+  USED_EXCELLENT
+  USED_GOOD
+  USED_FAIR
+  FOR_PARTS
+}
+
+enum SellingGoal {
+  SELL_ASAP
+  BALANCED
+  MAX_PROFIT
+}
+
+enum ListingStatus {
+  DRAFT
+  LISTED
+}
+
+model User {
+  id              String           @id @default(cuid())
+  name            String?
+  email           String           @unique
+  passwordHash    String
+  role            Role             @default(USER)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  subscriptions   Subscription[]
+  createdLeads    Lead[]           @relation("LeadCreator")
+  userLeads       UserLead[]
+  deals           Deal[]
+  listings        Listing[]
+  alertPreference AlertPreference?
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  plan                 PlanTier           @default(FREE)
+  status               SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+}
+
+model Lead {
+  id                      String      @id @default(cuid())
+  title                   String
+  imageUrl                String
+  sourceStore             String
+  category                String
+  buyPrice                Decimal     @db.Decimal(10, 2)
+  estimatedSalePrice      Decimal     @db.Decimal(10, 2)
+  marketplace             Marketplace
+  estimatedFees           Decimal     @db.Decimal(10, 2)
+  estimatedShippingCost   Decimal     @db.Decimal(10, 2)
+  estimatedProfit         Decimal     @db.Decimal(10, 2)
+  estimatedRoi            Decimal     @db.Decimal(7, 2)
+  sellThroughRating       Int
+  confidenceScore         Int
+  premiumOnly             Boolean     @default(false)
+  premiumEarlyAccessUntil DateTime?
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  createdById             String?
+  createdBy               User?       @relation("LeadCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  userLeads               UserLead[]
+  deals                   Deal[]
+
+  @@unique([title, sourceStore, marketplace])
+  @@index([category, createdAt])
+  @@index([marketplace, estimatedRoi])
+  @@index([premiumOnly, premiumEarlyAccessUntil])
+}
+
+model UserLead {
+  id        String                @id @default(cuid())
+  userId    String
+  leadId    String
+  status    LeadInteractionStatus
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lead      Lead                  @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, leadId])
+  @@index([userId, status])
+}
+
+model Deal {
+  id                 String     @id @default(cuid())
+  userId             String
+  leadId             String?
+  title              String
+  status             DealStatus @default(SAVED)
+  actualCost         Decimal?   @db.Decimal(10, 2)
+  actualSalePrice    Decimal?   @db.Decimal(10, 2)
+  actualShippingCost Decimal?   @db.Decimal(10, 2)
+  actualFees         Decimal?   @db.Decimal(10, 2)
+  actualProfit       Decimal?   @db.Decimal(10, 2)
+  notes              String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  soldAt             DateTime?
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lead               Lead?      @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, leadId])
+  @@index([userId, status])
+}
+
+model AlertPreference {
+  id              String         @id @default(cuid())
+  userId          String         @unique
+  enabled         Boolean        @default(false)
+  categories      String[]
+  roiThreshold    Int?
+  newLeadAlerts   Boolean        @default(true)
+  priorityAlerts  Boolean        @default(false)
+  frequency       AlertFrequency @default(DAILY)
+  lastAlertSentAt DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MarketplaceFeeProfile {
+  id                  String      @id @default(cuid())
+  marketplace         Marketplace @unique
+  name                String
+  description         String?
+  baseFeePercent      Decimal     @db.Decimal(5, 4)
+  paymentFeePercent   Decimal     @db.Decimal(5, 4)
+  fixedFee            Decimal     @db.Decimal(10, 2)
+  defaultShippingCost Decimal     @db.Decimal(10, 2)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+}
+
+model Listing {
+  id          String            @id @default(cuid())
+  userId      String
+  marketplace Marketplace
+  photos      String[]
+  productName String?
+  brand       String?
+  model       String?
+  accessories String?
+  defects     String?
+  condition   ListingCondition?
+  sellingGoal SellingGoal?
+  output      Json?
+  status      ListingStatus     @default(DRAFT)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, createdAt])
+}
