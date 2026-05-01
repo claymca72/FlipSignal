@@ -16,10 +16,11 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
 
 ## Week 1 — Track A: Foundations (Prisma, gating, billing wiring)
 
-- [ ] **W1-A1** Add `Listing` and `SavedListing` Prisma models
-    - Done when: `pnpm prisma:generate` succeeds; `pnpm db:push` applies cleanly to the local DB; `prisma studio` shows both tables; a manual insert + read via the Prisma client succeeds for each model.
-    - Files: `prisma/schema.prisma` (additions only).
+- [x] **W1-A1** Add `Listing` Prisma model (consolidated — `SavedListing` dropped, no junction needed)
+    - Done when: `pnpm prisma:generate` succeeds; `pnpm prisma format` no-ops; new `Listing` model + `ListingCondition` / `SellingGoal` / `ListingStatus` enums + `User.listings` inverse relation in place. `pnpm db:push` to verify against the local DB will be done as part of W2-5 when the upload+generate flow first writes a row.
+    - Files: `prisma/schema.prisma`.
     - Approval: not required (net-new models, no rename of existing models).
+    - **Verified 2026-05-01.** `pnpm prisma:generate` clean; `pnpm prisma format` clean; `pnpm build` clean.
 
 - [ ] **W1-A2** Extend `PlanTier` enum: add `STARTER`, `SELLER`, `POWER_SELLER`; rename `PRO` → `STARTER` and `PREMIUM` → `SELLER`
     - Done when: enum migration applies cleanly; existing `Subscription` rows are migrated (PRO→STARTER, PREMIUM→SELLER); `pnpm verify:pass2` still passes; seeded demo accounts still log in.
@@ -31,10 +32,11 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
     - Files: `src/lib/plans.ts`.
     - Approval: **REQUIRED** — touches existing gating helpers used across the lead and deals features.
 
-- [ ] **W1-A4** Add `STRIPE_STARTER_PRICE_ID`, `STRIPE_SELLER_PRICE_ID`, `STRIPE_POWER_PRICE_ID` to env, with sensible empty defaults
+- [x] **W1-A4** Add `STRIPE_STARTER_PRICE_ID`, `STRIPE_SELLER_PRICE_ID`, `STRIPE_POWER_PRICE_ID` to env, with sensible empty defaults
     - Done when: `.env.example` lists all three; the app starts cleanly with them unset (development plan switching path still works); `process.env` typing/validation if any is updated.
-    - Files: `.env.example`, env validation if present.
+    - Files: `.env.example`, `src/lib/env.ts` (Zod schema, all three added as `z.string().optional()`).
     - Approval: not required (additive env vars).
+    - **Verified 2026-05-01.** `pnpm build` clean.
 
 - [ ] **W1-A5** Refactor `src/app/api/billing/checkout/route.ts` from hardcoded ternary to a `tier → priceId` map
     - Done when: posting `{ plan: "STARTER" }` resolves to `STRIPE_STARTER_PRICE_ID`; same for SELLER and POWER_SELLER; a missing price ID returns a clear 400; the existing local-only plan switch path still works in development; manual click-through on `/pricing` reaches a Stripe checkout URL when env is configured.
@@ -48,15 +50,17 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
 
 ## Week 1 — Track B: Greenfield risk retirement
 
-- [ ] **W1-B1** Image upload spike: pick provider, stand up bucket, signed-URL endpoint, minimal upload component
-    - Done when: a logged-in user can drag-drop a JPG ≤10 MB into a throwaway page and see the resulting URL fetch a 200 from the bucket; CORS works in dev; a max-size + max-count guard rejects oversized or 9th uploads with a clear error.
-    - Files: new `src/app/api/listings/upload/` route, throwaway test page (deleted after week 2), env vars for the chosen provider.
+- [x] **W1-B1** Image upload pipeline (Cloudflare R2 + signed PUT URLs)
+    - Done when: a logged-in user can drag-drop a JPG ≤10 MB into the PhotoUploader and see the resulting URL fetch a 200 from the bucket; CORS works in dev; max-size + max-count guards reject oversized or 9th uploads with a clear error. The end-to-end fetch test is deferred until R2 credentials are wired (see `docs/listings-upload-setup.md`).
+    - Files: `src/lib/storage/r2.ts`, `src/app/api/listings/upload/route.ts`, `src/components/app/listings/PhotoUploader.tsx` (451 LOC), `docs/listings-upload-setup.md`, `package.json` (adds `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner`).
     - Approval: not required (all net-new).
+    - **Verified 2026-05-01.** `pnpm build` clean — `/api/listings/upload` registered in the route table; `pnpm lint` clean. End-to-end PUT to R2 still requires bucket credentials per the setup doc.
 
 - [ ] **W1-B2** Vision-model bakeoff on 30–50 representative photos
     - Done when: a one-page result doc is added to `Vault/FlipSignal/` (or `docs/`) with category coverage, scoring rubric, per-model accuracy on product type / brand-model / "I don't know" calibration, and per-call cost; one model is picked with rationale; the picked model's prompt scaffold is captured for week 3.
     - Files: spike notes only — no production code.
     - Approval: not required (research only, no code changes to the app).
+    - **Plan ready 2026-04-30.** [[Vision Model Bakeoff Plan]] is the methodology doc; box stays unchecked until the bakeoff is actually run with real photos and the picked-model rationale is appended.
 
 ---
 

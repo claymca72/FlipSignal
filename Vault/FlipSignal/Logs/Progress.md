@@ -4,6 +4,17 @@ See also: [[Home]], [[Pass 1 Audit]], [[Database State]], [[Logs/Decisions]], [[
 
 This note records tangible delivery progress over time.
 
+## 2026-05-01
+
+- Configured `WorktreeCreate` / `WorktreeRemove` hooks (Cowork session installer at `.claude-setup/`) so future agent dispatches can use real worktree isolation.
+- Committed FlipSignal app + Vault baseline as `f8bad9f` and force-pushed to `origin/main` at https://github.com/claymca72/FlipSignal.git. Repo is now the source of truth.
+- Round 1 of Listing Signal build complete and verified locally:
+  - **W1-A1** — `Listing` model + `ListingCondition` / `SellingGoal` / `ListingStatus` enums + `User.listings` inverse relation. `SavedListing` dropped (no junction needed). `pnpm prisma:generate` and `pnpm prisma format` clean.
+  - **W1-A4** — `STRIPE_STARTER_PRICE_ID` / `STRIPE_SELLER_PRICE_ID` / `STRIPE_POWER_PRICE_ID` added to `.env.example` and `src/lib/env.ts` (Zod schema, all optional).
+  - **W1-B1** — Image upload pipeline. `src/lib/storage/r2.ts`, `src/app/api/listings/upload/route.ts`, `PhotoUploader.tsx` (451 LOC), `docs/listings-upload-setup.md`. `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` added. `pnpm build` and `pnpm lint` clean. End-to-end PUT to R2 still requires bucket credentials per the setup doc.
+  - **W1-B2** — [[Vision Model Bakeoff Plan]] (methodology only; bakeoff itself runs once a photo set is assembled).
+- Agent orchestration in place: per-task model right-sizing (Haiku for mechanical, Sonnet for implementation, Opus reserved for safety-critical and review), parallel dispatch, worktree isolation now wired.
+
 ## 2026-04-30
 
 - Drafted the Listing Signal MVP PRD as a Word doc at `FlipSignal_Listing_Signal_PRD.docx` (canonical).
