@@ -9,24 +9,37 @@ export const planContent = {
     emailAlerts: false,
     premiumOnlyLeads: false,
     priorityAlerts: false,
+    listingLimit: 3,
   },
-  [PlanTier.PRO]: {
-    label: "Pro",
+  [PlanTier.STARTER]: {
+    label: "Starter",
     leadLimit: null,
     dealLimit: null,
     filters: true,
     emailAlerts: true,
     premiumOnlyLeads: false,
     priorityAlerts: false,
+    listingLimit: 25,
   },
-  [PlanTier.PREMIUM]: {
-    label: "Premium",
+  [PlanTier.SELLER]: {
+    label: "Seller",
     leadLimit: null,
     dealLimit: null,
     filters: true,
     emailAlerts: true,
     premiumOnlyLeads: true,
     priorityAlerts: true,
+    listingLimit: 75,
+  },
+  [PlanTier.POWER_SELLER]: {
+    label: "Power Seller",
+    leadLimit: null,
+    dealLimit: null,
+    filters: true,
+    emailAlerts: true,
+    premiumOnlyLeads: true,
+    priorityAlerts: true,
+    listingLimit: 250,
   },
 } as const;
 

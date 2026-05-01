@@ -88,7 +88,7 @@ export async function runLeadAlerts() {
         subscriptions: {
           some: {
             status: "ACTIVE",
-            plan: { in: ["PRO", "PREMIUM"] },
+            plan: { in: ["STARTER", "SELLER", "POWER_SELLER"] },
           },
         },
       },
@@ -117,7 +117,7 @@ export async function runLeadAlerts() {
         createdAt: { gt: since },
         category: preference.categories.length ? { in: preference.categories } : undefined,
         estimatedRoi: preference.roiThreshold ? { gte: preference.roiThreshold } : undefined,
-        premiumOnly: plan === "PREMIUM" ? undefined : false,
+        premiumOnly: plan === "SELLER" || plan === "POWER_SELLER" ? undefined : false,
       },
       orderBy: { createdAt: "desc" },
       take: preference.priorityAlerts ? 8 : 5,

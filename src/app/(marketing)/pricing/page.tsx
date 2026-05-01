@@ -64,7 +64,7 @@ export default async function PricingPage({
           }
         />
         <PlanCard
-          name="Pro"
+          name="Starter"
           price="$29/mo"
           description="For active resellers who want the complete workflow and alerts."
           highlight
@@ -77,28 +77,28 @@ export default async function PricingPage({
           action={
             user ? (
               canUseLocalPlanSwitch ? (
-                <LocalPlanSwitchForm plan={PlanTier.PRO} currentPlan={user.plan} />
+                <LocalPlanSwitchForm plan={PlanTier.STARTER} currentPlan={user.plan} />
               ) : (
                 <form action="/api/billing/checkout" method="POST">
-                  <input type="hidden" name="plan" value={PlanTier.PRO} />
+                  <input type="hidden" name="plan" value={PlanTier.STARTER} />
                   <Button className="w-full" type="submit">
-                    Upgrade to Pro
+                    Upgrade to Starter
                   </Button>
                 </form>
               )
             ) : (
               <Button className="w-full" asChild>
-                <Link href="/signup?plan=pro">Start Pro</Link>
+                <Link href="/signup?plan=starter">Start Starter</Link>
               </Button>
             )
           }
         />
         <PlanCard
-          name="Premium"
+          name="Seller"
           price="$79/mo"
           description="For resellers who want premium-only flips and earlier access to the best leads."
           features={[
-            "Everything in Pro",
+            "Everything in Starter",
             "Premium-only leads",
             "Early access flag on premium drops",
             "Priority alerts",
@@ -106,18 +106,18 @@ export default async function PricingPage({
           action={
             user ? (
               canUseLocalPlanSwitch ? (
-                <LocalPlanSwitchForm plan={PlanTier.PREMIUM} currentPlan={user.plan} />
+                <LocalPlanSwitchForm plan={PlanTier.SELLER} currentPlan={user.plan} />
               ) : (
                 <form action="/api/billing/checkout" method="POST">
-                  <input type="hidden" name="plan" value={PlanTier.PREMIUM} />
+                  <input type="hidden" name="plan" value={PlanTier.SELLER} />
                   <Button variant="outline" className="w-full" type="submit">
-                    Upgrade to Premium
+                    Upgrade to Seller
                   </Button>
                 </form>
               )
             ) : (
               <Button variant="outline" className="w-full" asChild>
-                <Link href="/signup?plan=premium">Start Premium</Link>
+                <Link href="/signup?plan=seller">Start Seller</Link>
               </Button>
             )
           }
@@ -194,7 +194,7 @@ function LocalPlanSwitchForm({
   return (
     <form action={switchLocalPlanAction}>
       <input type="hidden" name="plan" value={plan} />
-      <Button className="w-full" variant={plan === PlanTier.PREMIUM ? "outline" : "default"} type="submit" disabled={isCurrent}>
+      <Button className="w-full" variant={plan === PlanTier.SELLER ? "outline" : "default"} type="submit" disabled={isCurrent}>
         {isCurrent ? "Current plan" : `Use ${plan.toLowerCase()} locally`}
       </Button>
     </form>

@@ -5,7 +5,7 @@ import Stripe from "stripe";
 import { getCurrentUser } from "@/lib/auth/session";
 import { env } from "@/lib/env";
 
-const checkoutPlans = [PlanTier.PRO, PlanTier.PREMIUM] as const;
+const checkoutPlans = [PlanTier.STARTER, PlanTier.SELLER, PlanTier.POWER_SELLER] as const;
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -25,7 +25,13 @@ export async function POST(request: Request) {
     return NextResponse.redirect(new URL("/pricing?billing=unconfigured", request.url));
   }
 
-  const priceId = plan === PlanTier.PRO ? env.STRIPE_PRO_PRICE_ID : env.STRIPE_PREMIUM_PRICE_ID;
+  const priceIdMap: Record<(typeof checkoutPlans)[number], string | undefined> = {
+    [PlanTier.STARTER]: env.STRIPE_STARTER_PRICE_ID,
+    [PlanTier.SELLER]: env.STRIPE_SELLER_PRICE_ID,
+    [PlanTier.POWER_SELLER]: env.STRIPE_POWER_PRICE_ID,
+  };
+
+  const priceId = priceIdMap[plan as (typeof checkoutPlans)[number]];
 
   if (!priceId) {
     return NextResponse.redirect(new URL("/pricing?billing=missing-price", request.url));

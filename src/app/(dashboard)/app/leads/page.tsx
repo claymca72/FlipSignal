@@ -106,9 +106,9 @@ export default async function LeadsPage({
               Free plan preview: showing the six newest standard leads. Upgrade for the full feed and advanced filters.
             </p>
           ) : null}
-          {user.plan === "PRO" ? (
+          {user.plan === "STARTER" ? (
             <p className="text-sm text-[var(--muted-foreground)]">
-              Pro includes the full standard feed. Premium-only leads still unlock on Premium.
+              Starter includes the full standard feed. Premium-only leads still unlock on Seller.
             </p>
           ) : null}
         </CardContent>

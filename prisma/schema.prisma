@@ -13,8 +13,9 @@ enum Role {
 
 enum PlanTier {
   FREE
-  PRO
-  PREMIUM
+  STARTER
+  SELLER
+  POWER_SELLER
 }
 
 enum SubscriptionStatus {

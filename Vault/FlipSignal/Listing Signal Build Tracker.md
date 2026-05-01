@@ -22,10 +22,11 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
     - Approval: not required (net-new models, no rename of existing models).
     - **Verified 2026-05-01.** `pnpm prisma:generate` clean; `pnpm prisma format` clean; `pnpm build` clean.
 
-- [ ] **W1-A2** Extend `PlanTier` enum: add `STARTER`, `SELLER`, `POWER_SELLER`; rename `PRO` → `STARTER` and `PREMIUM` → `SELLER`
+- [x] **W1-A2** Extend `PlanTier` enum: add `STARTER`, `SELLER`, `POWER_SELLER`; rename `PRO` → `STARTER` and `PREMIUM` → `SELLER`
     - Done when: enum migration applies cleanly; existing `Subscription` rows are migrated (PRO→STARTER, PREMIUM→SELLER); `pnpm verify:pass2` still passes; seeded demo accounts still log in.
-    - Files: `prisma/schema.prisma`, `prisma/seed.ts`.
-    - Approval: **REQUIRED** — touches existing tier values stored in the DB and used everywhere downstream.
+    - Files: `prisma/schema.prisma`, `prisma/seed.ts`, `src/lib/plans.ts` (key rename only), `src/app/api/billing/checkout/route.ts` (case rename + POWER_SELLER 400), `src/app/(marketing)/pricing/page.tsx`, `src/app/(marketing)/signup/page.tsx`, `src/app/(dashboard)/app/leads/page.tsx`, `src/domains/alerts/service.ts`, `scripts/verify-pass2.ts`.
+    - Approval: **REQUIRED** — touches existing tier values stored in the DB and used everywhere downstream. Approved by Marcus on 2026-05-01.
+    - **Verified 2026-05-01.** `pnpm prisma:generate`, `pnpm build`, `pnpm lint`, `pnpm db:push --force-reset`, `pnpm db:seed`, `pnpm verify:pass2` all clean. Cleanup: `scripts/verify-pass2.ts` had 4 stale references missed by the original grep (scoped to `src/` and `prisma/`); fixed in a follow-up edit.
 
 - [ ] **W1-A3** Extend `planContent` map in `src/lib/plans.ts` with listing quotas + add `canGenerateListing(user)` helper
     - Done when: `planContent[FREE].listingLimit === 3`, `STARTER === 25`, `SELLER === 75`, `POWER_SELLER === 250`; `canGenerateListing(user)` returns `false` for a Free user with 3 listings already this period and `true` for a Starter user with 24; existing helpers (`canUseLeadFilters`, `canUseEmailAlerts`, etc.) keep their behavior under renamed tier names.
@@ -215,10 +216,10 @@ This log is the single source of truth for approvals on tasks marked `Approval: 
 
 | Date | Task ID | Approver | Notes |
 |---|---|---|---|
-| _pending_ | W1-A2 | _pending_ | Rename PRO/PREMIUM in `PlanTier` |
-| _pending_ | W1-A3 | _pending_ | Touch `planContent` and gating helpers |
-| _pending_ | W1-A5 | _pending_ | Refactor `/api/billing/checkout` route |
-| _pending_ | W1-A6 | _pending_ | Remap seed accounts |
+| 2026-05-01 | W1-A2 | Marcus | Rename PRO/PREMIUM in `PlanTier`. Scope expanded to include minimum required cross-file renames in seed.ts / plans.ts / checkout route to keep build green. |
+| 2026-05-01 | W1-A3 | Marcus | Add listing quotas to `planContent` + `canGenerateListing` helper. Purely additive on top of A2. |
+| 2026-05-01 | W1-A5 | Marcus | Refactor `/api/billing/checkout` ternary into a tier→priceId map. Additive on top of A2's minimal rename. |
+| 2026-05-01 | W1-A6 | Marcus | Verify seed idempotency under new tier names; ensure `pnpm db:seed` is safe to re-run. (Most of A6's original scope is absorbed by A2.) |
 | _pending_ | W5-2 | _pending_ | New Stripe webhook receiver |
 | _pending_ | W5-3 | _pending_ | One-time migration of existing Subscription rows |
 | _pending_ | W5-4 | _pending_ | Update existing onboarding + pricing copy |

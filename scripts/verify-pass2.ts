@@ -34,14 +34,14 @@ async function main() {
   }
 
   assert(freeUser.subscriptions[0]?.plan === PlanTier.FREE, "Demo user should be on Free.");
-  assert(proUser.subscriptions[0]?.plan === PlanTier.PRO, "Pro user should be on Pro.");
-  assert(premiumUser.subscriptions[0]?.plan === PlanTier.PREMIUM, "Premium user should be on Premium.");
+  assert(proUser.subscriptions[0]?.plan === PlanTier.STARTER, "Starter user should be on Starter.");
+  assert(premiumUser.subscriptions[0]?.plan === PlanTier.SELLER, "Seller user should be on Seller.");
 
-  const [freeFeed, freeFilteredFeed, proSneakerFeed, premiumFeed] = await Promise.all([
+  const [freeFeed, freeFilteredFeed, starterSneakerFeed, sellerFeed] = await Promise.all([
     getLeadFeedForUser({ userId: freeUser.id, plan: PlanTier.FREE, filters: {} }),
     getLeadFeedForUser({ userId: freeUser.id, plan: PlanTier.FREE, filters: { category: "electronics" } }),
-    getLeadFeedForUser({ userId: proUser.id, plan: PlanTier.PRO, filters: { category: "sneakers" } }),
-    getLeadFeedForUser({ userId: premiumUser.id, plan: PlanTier.PREMIUM, filters: {} }),
+    getLeadFeedForUser({ userId: proUser.id, plan: PlanTier.STARTER, filters: { category: "sneakers" } }),
+    getLeadFeedForUser({ userId: premiumUser.id, plan: PlanTier.SELLER, filters: {} }),
   ]);
 
   assert(freeFeed.length <= 6, "Free plan should see a limited feed.");
@@ -50,10 +50,10 @@ async function main() {
     freeFilteredFeed.length === freeFeed.length,
     "Free plan filters should not narrow the feed because filters are gated.",
   );
-  assert(proSneakerFeed.length > 0, "Pro plan should be able to filter leads.");
-  assert(proSneakerFeed.every((lead) => lead.category === "sneakers"), "Pro category filter should work.");
-  assert(proSneakerFeed.every((lead) => !lead.premiumOnly), "Pro plan should not see premium-only leads.");
-  assert(premiumFeed.some((lead) => lead.premiumOnly), "Premium plan should see premium-only leads.");
+  assert(starterSneakerFeed.length > 0, "Starter plan should be able to filter leads.");
+  assert(starterSneakerFeed.every((lead) => lead.category === "sneakers"), "Starter category filter should work.");
+  assert(starterSneakerFeed.every((lead) => !lead.premiumOnly), "Starter plan should not see premium-only leads.");
+  assert(sellerFeed.some((lead) => lead.premiumOnly), "Seller plan should see premium-only leads.");
 
   const calculatorResult = calculateProfitBreakdown({
     cost: 80,
@@ -192,7 +192,7 @@ async function main() {
   assert(!overLimitResult.success, "Free user should be blocked from saving the 11th deal.");
 
   console.log("Pass 2 verification complete.");
-  console.log("- Lead feed gating verified for Free, Pro, and Premium");
+  console.log("- Lead feed gating verified for Free, Starter, and Seller");
   console.log("- Calculator domain logic verified");
   console.log("- Saved deals workflow verified through save, buy, list, and sell");
   console.log("- Free-plan deal limit verified");

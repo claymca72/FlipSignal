@@ -9,12 +9,12 @@ import { getCurrentUser } from "@/lib/auth/session";
 export const dynamic = "force-dynamic";
 
 function getDefaultPlan(plan?: string | string[]) {
-  if (plan === "pro") {
-    return PlanTier.PRO;
+  if (plan === "starter") {
+    return PlanTier.STARTER;
   }
 
-  if (plan === "premium") {
-    return PlanTier.PREMIUM;
+  if (plan === "seller") {
+    return PlanTier.SELLER;
   }
 
   return PlanTier.FREE;

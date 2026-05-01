@@ -4,6 +4,11 @@ See also: [[Home]], [[Pass 1 Audit]], [[Database State]], [[Logs/Decisions]], [[
 
 This note records tangible delivery progress over time.
 
+## 2026-05-01 (later)
+
+- **W1-A2 complete and verified.** `PlanTier` enum renamed PRO→STARTER and PREMIUM→SELLER; POWER_SELLER added. 9 files modified across schema, seed, plans, checkout route, marketing/dashboard pages, alerts service, and the verify-pass2 script. `pnpm prisma:generate`, `pnpm build`, `pnpm lint`, `pnpm db:push --force-reset`, `pnpm db:seed`, `pnpm verify:pass2` all clean. Note: original agent grep was scoped to `src/` + `prisma/` and missed `scripts/verify-pass2.ts`; fixed in a follow-up edit. Lesson: future rename prompts should grep the whole repo, not just app source.
+- Cowork's Agent tool does not honor user-level (`~/.claude/`) `WorktreeCreate` / `WorktreeRemove` hooks even after install. Hooks live in a Cowork-specific location we don't have access to. Working pattern for now: dispatch agents without isolation, review via `git diff` against the latest commit, roll back with `git reset --hard <baseline>` if anything's wrong.
+
 ## 2026-05-01
 
 - Configured `WorktreeCreate` / `WorktreeRemove` hooks (Cowork session installer at `.claude-setup/`) so future agent dispatches can use real worktree isolation.

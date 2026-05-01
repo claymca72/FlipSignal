@@ -73,8 +73,9 @@ Required for local app + database:
 Optional for billing:
 
 - `STRIPE_SECRET_KEY`
-- `STRIPE_PRO_PRICE_ID`
-- `STRIPE_PREMIUM_PRICE_ID`
+- `STRIPE_STARTER_PRICE_ID`
+- `STRIPE_SELLER_PRICE_ID`
+- `STRIPE_POWER_PRICE_ID`
 - `STRIPE_WEBHOOK_SECRET`
 
 Optional for alerts:

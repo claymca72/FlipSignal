@@ -273,13 +273,13 @@ async function main() {
     }),
     prisma.user.upsert({
       where: { email: "pro@flipsignal.app" },
-      update: { name: "Pro Seller", passwordHash: password },
+      update: { name: "Starter Seller", passwordHash: password },
       create: {
         email: "pro@flipsignal.app",
-        name: "Pro Seller",
+        name: "Starter Seller",
         passwordHash: password,
         subscriptions: {
-          create: { plan: PlanTier.PRO, status: SubscriptionStatus.ACTIVE },
+          create: { plan: PlanTier.STARTER, status: SubscriptionStatus.ACTIVE },
         },
         alertPreference: {
           create: {
@@ -293,13 +293,13 @@ async function main() {
     }),
     prisma.user.upsert({
       where: { email: "premium@flipsignal.app" },
-      update: { name: "Premium Seller", passwordHash: password },
+      update: { name: "Pro Seller", passwordHash: password },
       create: {
         email: "premium@flipsignal.app",
-        name: "Premium Seller",
+        name: "Pro Seller",
         passwordHash: password,
         subscriptions: {
-          create: { plan: PlanTier.PREMIUM, status: SubscriptionStatus.ACTIVE },
+          create: { plan: PlanTier.SELLER, status: SubscriptionStatus.ACTIVE },
         },
         alertPreference: {
           create: {
@@ -322,7 +322,7 @@ async function main() {
         passwordHash: password,
         role: Role.ADMIN,
         subscriptions: {
-          create: { plan: PlanTier.PREMIUM, status: SubscriptionStatus.ACTIVE },
+          create: { plan: PlanTier.SELLER, status: SubscriptionStatus.ACTIVE },
         },
       },
     }),
