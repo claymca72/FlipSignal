@@ -1,7 +1,3 @@
-// TODO(W2-1-approval): add Listing Generator nav link to dashboardNavigation in src/lib/constants.ts
-// Proposed entry: { href: "/app/listing-generator", label: "Listing Generator" }
-// Insert after the Deals entry, before Settings.
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth/session";
 
