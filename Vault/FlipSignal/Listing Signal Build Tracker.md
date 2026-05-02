@@ -28,10 +28,11 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
     - Approval: **REQUIRED** — touches existing tier values stored in the DB and used everywhere downstream. Approved by Marcus on 2026-05-01.
     - **Verified 2026-05-01.** `pnpm prisma:generate`, `pnpm build`, `pnpm lint`, `pnpm db:push --force-reset`, `pnpm db:seed`, `pnpm verify:pass2` all clean. Cleanup: `scripts/verify-pass2.ts` had 4 stale references missed by the original grep (scoped to `src/` and `prisma/`); fixed in a follow-up edit.
 
-- [ ] **W1-A3** Extend `planContent` map in `src/lib/plans.ts` with listing quotas + add `canGenerateListing(user)` helper
+- [x] **W1-A3** Extend `planContent` map in `src/lib/plans.ts` with listing quotas + add `canGenerateListing(user)` helper
     - Done when: `planContent[FREE].listingLimit === 3`, `STARTER === 25`, `SELLER === 75`, `POWER_SELLER === 250`; `canGenerateListing(user)` returns `false` for a Free user with 3 listings already this period and `true` for a Starter user with 24; existing helpers (`canUseLeadFilters`, `canUseEmailAlerts`, etc.) keep their behavior under renamed tier names.
-    - Files: `src/lib/plans.ts`.
-    - Approval: **REQUIRED** — touches existing gating helpers used across the lead and deals features.
+    - Files: `src/lib/plans.ts` (planContent.listingLimit), `src/lib/listing-quota.ts` (new server-only module hosting `canGenerateListing` so plans.ts stays client-safe).
+    - Approval: **REQUIRED** — touches existing gating helpers used across the lead and deals features. Approved by Marcus on 2026-05-01.
+    - **Verified 2026-05-01.** `pnpm build`, `pnpm lint`, `pnpm verify:pass2` clean. Initial agent placed `canGenerateListing` in `plans.ts`, which broke client bundles (Prisma pulled into a module imported by `alerts-settings-form.tsx`); fixed by extracting to a `"server-only"` module.
 
 - [x] **W1-A4** Add `STRIPE_STARTER_PRICE_ID`, `STRIPE_SELLER_PRICE_ID`, `STRIPE_POWER_PRICE_ID` to env, with sensible empty defaults
     - Done when: `.env.example` lists all three; the app starts cleanly with them unset (development plan switching path still works); `process.env` typing/validation if any is updated.
@@ -39,15 +40,17 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
     - Approval: not required (additive env vars).
     - **Verified 2026-05-01.** `pnpm build` clean.
 
-- [ ] **W1-A5** Refactor `src/app/api/billing/checkout/route.ts` from hardcoded ternary to a `tier → priceId` map
+- [x] **W1-A5** Refactor `src/app/api/billing/checkout/route.ts` from hardcoded ternary to a `tier → priceId` map
     - Done when: posting `{ plan: "STARTER" }` resolves to `STRIPE_STARTER_PRICE_ID`; same for SELLER and POWER_SELLER; a missing price ID returns a clear 400; the existing local-only plan switch path still works in development; manual click-through on `/pricing` reaches a Stripe checkout URL when env is configured.
-    - Files: `src/app/api/billing/checkout/route.ts`.
-    - Approval: **REQUIRED** — touches the production billing entry point.
+    - Files: `src/app/api/billing/checkout/route.ts` (ternary → Record map, POWER_SELLER fully wired), `src/lib/env.ts` (removed legacy STRIPE_PRO_PRICE_ID / STRIPE_PREMIUM_PRICE_ID), `.env.example` (same), `README.md` (env reference list).
+    - Approval: **REQUIRED** — touches the production billing entry point. Approved by Marcus on 2026-05-01.
+    - **Verified 2026-05-01.** `pnpm build`, `pnpm lint` clean.
 
-- [ ] **W1-A6** Remap seeded demo accounts to the new tier names
+- [x] **W1-A6** Remap seeded demo accounts to the new tier names
     - Done when: `pro@flipsignal.app` seeds as `STARTER`, `premium@flipsignal.app` seeds as `SELLER`; `admin@flipsignal.app` keeps admin + paid access; `pnpm db:seed` is idempotent on a previously-seeded DB.
-    - Files: `prisma/seed.ts`.
-    - Approval: **REQUIRED** — modifies existing seed data and demo account expectations.
+    - Files: `prisma/seed.ts` (most of the scope was absorbed by W1-A2; net W1-A6 contribution is verification only — the existing nested-create pattern was already idempotent).
+    - Approval: **REQUIRED** — modifies existing seed data and demo account expectations. Approved by Marcus on 2026-05-01.
+    - **Verified 2026-05-01.** `pnpm db:seed` runs cleanly twice in a row; `pnpm verify:pass2` passes against the reseeded DB. Note: agent overstepped by extracting subscription/alertPreference into separate upserts using a non-unique `where: { userId }`, which broke type-checking; reverted to the original nested-create pattern.
 
 ## Week 1 — Track B: Greenfield risk retirement
 

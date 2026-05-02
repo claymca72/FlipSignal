@@ -21,6 +21,9 @@ export const dashboardNavigation = [
   { href: "/app/leads", label: "Lead Feed" },
   { href: "/app/calculator", label: "Calculator" },
   { href: "/app/deals", label: "Deals" },
+  // TODO(W2-1-approval): add Listing Generator nav link here
+  // Proposed entry: { href: "/app/listing-generator", label: "Listing Generator" }
+  // Insert after Deals, before Settings, so it sits with the core workflow items.
   { href: "/app/settings", label: "Settings" },
   { href: "/app/alerts", label: "Alerts" },
 ];

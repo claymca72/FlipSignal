@@ -4,6 +4,14 @@ See also: [[Home]], [[Pass 1 Audit]], [[Database State]], [[Logs/Decisions]], [[
 
 This note records tangible delivery progress over time.
 
+## 2026-05-01 (week 1 complete)
+
+- **W1-A3 / W1-A5 / W1-A6 complete and verified.**
+  - **W1-A3** added `listingLimit` to `planContent` (3/25/75/250) and a server-only `canGenerateListing(userId, plan)` helper in `src/lib/listing-quota.ts`. First attempt put the helper in `plans.ts`, which pulled the Prisma client into client bundles (`pg` requires `dns`/`fs`/`tls` Node built-ins) — fixed by extracting to a `"server-only"` module. Lesson for future agent prompts: any module imported transitively by a client component must stay free of server-only deps.
+  - **W1-A5** replaced the hardcoded `STARTER/SELLER` ternary in `/api/billing/checkout` with a `Record<tier, priceId>` map, wired POWER_SELLER, and removed the legacy `STRIPE_PRO_PRICE_ID` / `STRIPE_PREMIUM_PRICE_ID` env vars + the README reference.
+  - **W1-A6** verified `prisma/seed.ts` was already idempotent. Agent overstepped (introduced a type error by using non-unique `where: { userId }`); reverted.
+- **Week 1 closed.** All P0 foundation work in place: `Listing` model, `PlanTier` rename + new tiers, listing quotas, `canGenerateListing`, checkout tier map, R2 image upload pipeline, `PhotoUploader` component, vision-model bakeoff methodology. App builds cleanly, lint clean, `verify:pass2` passes, seed idempotent.
+
 ## 2026-05-01 (later)
 
 - **W1-A2 complete and verified.** `PlanTier` enum renamed PRO→STARTER and PREMIUM→SELLER; POWER_SELLER added. 9 files modified across schema, seed, plans, checkout route, marketing/dashboard pages, alerts service, and the verify-pass2 script. `pnpm prisma:generate`, `pnpm build`, `pnpm lint`, `pnpm db:push --force-reset`, `pnpm db:seed`, `pnpm verify:pass2` all clean. Note: original agent grep was scoped to `src/` + `prisma/` and missed `scripts/verify-pass2.ts`; fixed in a follow-up edit. Lesson: future rename prompts should grep the whole repo, not just app source.
