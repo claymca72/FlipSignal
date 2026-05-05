@@ -4,6 +4,19 @@ See also: [[Home]], [[Decisions and Next Steps]], [[Architecture Notes]], [[Logs
 
 This note captures decisions that shape implementation, scope, and architecture.
 
+## 2026-05-05
+
+### PIVOT: Direct eBay posting moves from P2 (future) to P0 (must-have)
+
+- Decision: reverse the original PRD's stance that direct eBay posting is a v2/future consideration. It is now a P0 requirement for the MVP. Add a new Week 4 dedicated to eBay Sell API integration (OAuth, Sell API client, EPS image upload, "Post to eBay" flow, listing status sync, CSV-export bridge while eBay developer approval is pending). Original W4–W6 work (saved listings, billing, beta launch) shift to W5–W7.
+- Why: without a posting mechanism, FlipSignal Listing Signal is a structured-output prompt around an existing AI. The user can copy-paste from any AI chat for free. The defensible product is one-click listing creation: photos + optional details → live eBay listing. Marcus (20-year eBay seller) flagged this directly: "If the user still needs to go to eBay and upload the images why not just upload their personal images at the same time. Right now the Listing Generator is only good for the description."
+- Tradeoff: extends MVP timeline by ~2 weeks (6 → 8). Worth it because the alternative is shipping a product whose value is replicable with a free chat tool.
+- Implementation gates: W4E-1 (eBay Developer Program approval) is a 3–7 day external dependency. Start it immediately in parallel with other work. W4E-7 (CSV export for File Exchange) is the bridge that delivers value to bulk sellers while we wait on approval and finish the API integration.
+
+### Pricing/Monetization Reconsider — TBD
+
+- Note: the unified Free / Starter / Seller / Power Seller pricing was set on per-generation quotas (3 / 25 / 75 / 250 listings/month). With direct posting added, the cost profile changes: a user might generate 50 drafts and post only 2, or vice versa. Whether to price on generations vs. posts vs. a hybrid is open. Park this decision until W4E-5 ships and we have real usage data on generation-to-post ratios.
+
 ## 2026-04-30
 
 ### Listing Signal Joins FlipSignal as a Unified Feature

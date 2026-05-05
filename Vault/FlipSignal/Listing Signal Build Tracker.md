@@ -70,35 +70,41 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
 
 ## Week 2 — UI scaffold
 
-- [ ] **W2-1** Create `/listing-generator` route with empty page shell and auth guard
+- [x] **W2-1** Create `/listing-generator` route with empty page shell and auth guard
     - Done when: visiting `/listing-generator` while logged out redirects to `/login`; while logged in shows the empty page with the existing app layout; route appears in the dashboard navigation per existing patterns.
-    - Files: `src/app/(dashboard)/app/listing-generator/page.tsx`, dashboard nav (if a shared nav component exists).
-    - Approval: required only if the dashboard nav is a shared component being modified — confirm before editing.
+    - Files: `src/app/(dashboard)/app/listing-generator/page.tsx` (server component, requireUser, fetches initial quota), `src/lib/constants.ts` (added `Listing Generator` entry to `dashboardNavigation`).
+    - Approval: required only if the dashboard nav is a shared component being modified — confirm before editing. Approved by Marcus on 2026-05-01 (nav link).
+    - **Verified 2026-05-01.**
 
-- [ ] **W2-2** Build `PhotoUploader` component (1–8 photos, drag-drop, reorder, preview, delete)
+- [x] **W2-2** Build `PhotoUploader` component (1–8 photos, drag-drop, reorder, preview, delete)
     - Done when: a user can drop or select 1–8 files; previews render in order; drag-reorder updates the list; delete works; 9th file or oversized file shows a clear error; component is reused via the same upload endpoint from W1-B1.
-    - Files: `src/components/app/listings/PhotoUploader.tsx`.
+    - Files: `src/components/app/listings/PhotoUploader.tsx` (built in W1-B1, imported by ListingGeneratorClient in W2-6).
     - Approval: not required (net-new).
+    - **Verified 2026-05-01** (free win — already built in W1-B1; W2-6 wiring closes this out).
 
-- [ ] **W2-3** Build `MarketplaceSelector` component (eBay only, future tiers visibly "coming soon")
+- [x] **W2-3** Build `MarketplaceSelector` component (eBay only, future tiers visibly "coming soon")
     - Done when: eBay is selected by default and selectable; Mercari/Poshmark/Depop options appear disabled with a "coming soon" label; selection persists in form state.
     - Files: `src/components/app/listings/MarketplaceSelector.tsx`.
     - Approval: not required (net-new).
+    - **Verified 2026-05-01.**
 
-- [ ] **W2-4** Build `ProductDetailsForm` component (name, brand, model #, condition dropdown, accessories, defects, selling-goal radio)
+- [x] **W2-4** Build `ProductDetailsForm` component (name, brand, model #, condition dropdown, accessories, defects, selling-goal radio)
     - Done when: all fields are present and optional; submitting the parent form serializes a typed payload that matches a Zod schema; condition options match the spec (New, Like New, Used-Excellent, Used-Good, Used-Fair, For Parts); selling-goal radio shows ASAP / Balanced / Max Profit.
-    - Files: `src/components/app/listings/ProductDetailsForm.tsx`, schema in the matching action file.
+    - Files: `src/components/app/listings/ProductDetailsForm.tsx` (react-hook-form + Zod, all optional, two-column layout, BALANCED default). Inline Zod schema rather than a separate file — the form values are scoped to this component.
     - Approval: not required (net-new).
+    - **Verified 2026-05-01.** One ESLint advisory (`react-hooks/incompatible-library` on `form.watch()` — inherent to react-hook-form + React Compiler interop, not a real bug).
 
-- [ ] **W2-5** Backend stub generation endpoint that returns canned output
+- [x] **W2-5** Backend stub generation endpoint that returns canned output
     - Done when: `POST /api/listings/generate` returns the full 11-section JSON schema with placeholder content; quota gate via `canGenerateListing()` returns 403 when over limit and decrements the counter on success.
-    - Files: `src/app/api/listings/generate/route.ts`, `src/domains/listings/service.ts` (new).
+    - Files: `src/app/api/listings/generate/route.ts` (auth, Zod body, quota gate, persistence, returns `{ id, output, used, limit }`), `src/domains/listings/service.ts` (server-only, exports `cannedListingOutput()` and `createListingForUser()`).
     - Approval: not required (net-new endpoint and domain).
+    - **Verified 2026-05-01.** Build clean after fixing a `Prisma.InputJsonValue` cast at the persist site.
 
-- [ ] **W2-6** Wire `/listing-generator` to the stub end to end
+- [x] **W2-6** Wire `/listing-generator` to the stub end to end
     - Done when: a logged-in Free user can upload a photo, fill the form, click Generate, and see the canned response render below; the in-progress listing survives a quota-hit upgrade-CTA round-trip.
-    - Files: `src/app/(dashboard)/app/listing-generator/page.tsx`, the form action, the upload component glue.
+    - Files: `src/app/(dashboard)/app/listing-generator/page.tsx` (server-side initial quota fetch), `src/components/app/listings/ListingGeneratorClient.tsx` (state owner — photos, marketplace, details, quota, result, error).
     - Approval: not required (net-new).
+    - **Verified 2026-05-01.** End-to-end flow works in dev: upload → form → generate → canned 11-field output renders → quota counter increments → 4th generate hits 403 with Upgrade banner that opens `/pricing` in a new tab (in-progress state preserved).
 
 ---
 
@@ -155,7 +161,50 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
 
 ---
 
-## Week 5 — Billing + polish
+## Week 4 — eBay integration (PIVOT: direct posting is now P0)
+
+This is the core value prop: photos + AI → live eBay listing in one flow. Without it, FlipSignal is a description-writer wrapped in eBay-specific scaffolding — see [[Logs/Decisions]] entry on 2026-05-05 for the pivot rationale. Direct posting was originally listed as P2 (future); reversing that decision.
+
+- [ ] **W4E-1** Apply for eBay Developer Program approval
+    - Done when: developer account is approved; production app credentials (App ID, Cert ID, Dev ID) are issued; production OAuth redirect URI is registered; sandbox account is set up for dev testing.
+    - Files: none — operational task for Marcus. Approval typically takes 3–7 business days; start this in parallel with other work.
+    - Approval: not required (configuration only).
+
+- [ ] **W4E-2** eBay OAuth flow — user authorization
+    - Done when: a logged-in FlipSignal user can click "Connect eBay account" → bounce through eBay's OAuth consent screen → return with an access + refresh token persisted on `User`; refresh-token cycling works; revocation flow surfaces a clean re-connect prompt.
+    - Files: `prisma/schema.prisma` (new `EbayConnection` model relating to `User`), `src/lib/integrations/ebay/oauth.ts`, `src/app/api/integrations/ebay/connect/route.ts`, `src/app/api/integrations/ebay/callback/route.ts`, env vars (EBAY_APP_ID, EBAY_CERT_ID, EBAY_DEV_ID, EBAY_OAUTH_REDIRECT_URI, EBAY_SCOPES).
+    - Approval: **REQUIRED** — extends the User model and adds new authentication state.
+
+- [ ] **W4E-3** eBay Sell API client wrapper
+    - Done when: a typed `EbayClient` exposes `createInventoryItem`, `createOffer`, `publishOffer`, `uploadPicture`; uses the user's refresh token to mint per-call access tokens; surfaces eBay's structured error responses cleanly; covers both sandbox and production endpoints via env-controlled base URL.
+    - Files: `src/lib/integrations/ebay/client.ts`, `src/lib/integrations/ebay/types.ts`.
+    - Approval: not required (net-new).
+
+- [ ] **W4E-4** Image upload to eBay Picture Services (EPS)
+    - Done when: photos already stored in R2 are uploaded to EPS via the Sell API; EPS returns hosted picture URLs that survive listing publication; flow handles 1–8 photos per listing matching FlipSignal's quota.
+    - Files: `src/lib/integrations/ebay/eps.ts`.
+    - Approval: not required (net-new).
+
+- [ ] **W4E-5** "Post to eBay" flow
+    - Done when: from the listing-generator output card, user clicks Post → frontend opens a confirmation modal showing the full listing + price + shipping → user confirms → backend creates inventory item, offer, publishes via the Sell API → listing is live on eBay; the eBay item ID is stored on the `Listing` row; the user is redirected to a success page with the live eBay URL.
+    - Files: `src/components/app/listings/PostToEbayModal.tsx`, `src/app/api/listings/post/route.ts`, `src/domains/listings/post.ts` (orchestration).
+    - Approval: **REQUIRED** — first user-action that posts to a third-party platform on their behalf; explicit consent + clear error handling matter.
+
+- [ ] **W4E-6** Listing status persistence + sync
+    - Done when: `Listing` model gains `ebayItemId`, `ebayStatus`, `ebayPostedAt`, `ebayUrl` fields; after a successful post, status is `LISTED` with eBay metadata; a daily cron-like job (or on-demand refresh button) re-fetches eBay status and updates `ebayStatus` to reflect SOLD, ENDED, etc.; the `/saved-listings` page (W5) shows live status badges.
+    - Files: `prisma/schema.prisma`, `src/domains/listings/sync.ts`, `src/app/api/listings/sync/route.ts` (cron-ready endpoint).
+    - Approval: **REQUIRED** — modifies the existing Listing model.
+
+- [ ] **W4E-7** CSV export for eBay File Exchange (bridge task)
+    - Done when: a "Download as CSV" button on the listing output produces an eBay File-Exchange-compatible CSV with one row per listing, all fields populated; format matches eBay's published [Inventory Loader template](https://www.ebay.com/help/selling/listings/managing-multiple-listings/managing-multiple-listings-file-exchange?id=4124); user can upload this CSV to eBay's bulk listing tool.
+    - Files: `src/domains/listings/csv.ts`, `src/app/api/listings/[id]/export-csv/route.ts`, frontend download button.
+    - Approval: not required (net-new). **This unblocks value while W4E-1 is in approval limbo** — sellers can paste-and-upload via File Exchange even without API integration.
+
+## Week 5 — Persistence, cards, polish (formerly Week 4)
+
+This is the previous Week 4 work, demoted in priority because posting (Week 4) is the actual product. Still valuable for repeat users.
+
+## Week 6 — Billing + polish (formerly Week 5)
 
 - [ ] **W5-1** Create new Stripe products and price IDs (Starter, Seller, Power Seller) in the Stripe dashboard; populate env
     - Done when: each tier has a live price ID in development env; checkout from `/pricing` for each tier reaches the correct Stripe checkout URL; cancel-from-Stripe returns user to the app cleanly.
@@ -189,7 +238,7 @@ Working tracker for the 6-week Listing Signal build. Every item has a concrete "
 
 ---
 
-## Week 6 — Beta launch
+## Week 7 — Beta launch (formerly Week 6)
 
 - [ ] **W6-1** Invite list ready (~50 resellers)
     - Done when: a list of email addresses with consent to be contacted is captured in a private note (not committed); a templated invite email is drafted; first batch sent.
@@ -226,6 +275,9 @@ This log is the single source of truth for approvals on tasks marked `Approval: 
 | _pending_ | W5-2 | _pending_ | New Stripe webhook receiver |
 | _pending_ | W5-3 | _pending_ | One-time migration of existing Subscription rows |
 | _pending_ | W5-4 | _pending_ | Update existing onboarding + pricing copy |
+| 2026-05-05 | W4E-2 | Marcus | OAuth integration extends User model (eBay tokens) |
+| 2026-05-05 | W4E-5 | Marcus | First user-action posting to a third-party (eBay) |
+| 2026-05-05 | W4E-6 | Marcus | Listing model gains ebayItemId / ebayStatus / ebayUrl fields |
 
 When approval is granted, replace `_pending_` with the date and approver, and mention the approval in the task's "Done when" criteria during execution.
 

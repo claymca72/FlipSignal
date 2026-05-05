@@ -2,7 +2,7 @@
 
 See also: [[Home]], [[Product Spec]], [[Architecture Notes]], [[Decisions and Next Steps]], [[Logs/Decisions]]
 
-Canonical PRD: `FlipSignal_Listing_Signal_PRD.docx` at the repo root.
+Canonical PRD: `FlipSignal_Listing_Signal_PRD.docx` at the repo root (v1.0). **Pivot addendum supersedes affected sections:** [[Listing Signal PRD v1.1 Addendum]] (2026-05-05 — direct eBay posting moves from v2/future to MVP/P0).
 
 Build tracker (checkable tasks with acceptance criteria): [[Listing Signal Build Tracker]].
 Vision-model bakeoff plan: [[Vision Model Bakeoff Plan]].

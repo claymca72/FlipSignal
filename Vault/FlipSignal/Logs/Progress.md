@@ -4,6 +4,29 @@ See also: [[Home]], [[Pass 1 Audit]], [[Database State]], [[Logs/Decisions]], [[
 
 This note records tangible delivery progress over time.
 
+## 2026-05-05 (PIVOT)
+
+- **Direct eBay posting moves from v2 (non-goal) to v1.1 MVP P0.** After Week 3 end-to-end testing, project owner flagged that without a posting mechanism FlipSignal Listing Signal is a structured-output prompt around an AI users can access for free. Reversing the original PRD non-goal.
+- New Week 4 added to phasing: eBay integration (OAuth, Sell API client, EPS image upload, Post-to-eBay flow, status sync, CSV export bridge). Existing W4–W6 work shifts to W5–W7. Total timeline 6 → 8 weeks.
+- Authored [[Listing Signal PRD v1.1 Addendum]] capturing revised goals, requirements, phasing, risks, and open questions. Original v1.0 docx preserved as historical record.
+- Tracker updated with new W4E-1..W4E-7 task block; Approval Log seeded with three new approval gates (OAuth, Post-to-eBay, Listing model schema additions).
+- Pricing model: per-generation quotas remain for v1.1 ship. Per-post or hybrid pricing decision deferred to post-beta based on actual generation-to-post ratios.
+
+## 2026-05-01 (week 2 complete)
+
+- **W2-1 / W2-2 / W2-3 / W2-4 / W2-5 / W2-6 complete and verified.**
+  - **W2-1** — `/listing-generator` route shell with auth gate + initial-quota fetch. `Listing Generator` entry added to `dashboardNavigation` in `src/lib/constants.ts` (approved by Marcus).
+  - **W2-2** — PhotoUploader (free win — already built in W1-B1; closed out by W2-6 importing it).
+  - **W2-3** — MarketplaceSelector pill component, eBay default, others "coming soon".
+  - **W2-4** — ProductDetailsForm with react-hook-form + Zod (all optional, two-column on wide screens, BALANCED default selling goal). One known ESLint advisory on `form.watch()` (React Compiler / react-hook-form interop, non-blocking).
+  - **W2-5** — `/api/listings/generate` route: auth, Zod body validation, quota gate via `canGenerateListing`, persists Listing row, returns `{ id, output, used, limit }`. Server-only domain module at `src/domains/listings/service.ts`. Required a `Prisma.InputJsonValue` cast on the typed-JSON output column.
+  - **W2-6** — `ListingGeneratorClient.tsx` ties everything together: photos → form → generate → canned 11-field preview with per-field Copy buttons → live quota counter → quota-hit Upgrade link opens `/pricing` in a new tab so in-progress state survives.
+- **Dev experience improvements**
+  - `scripts/dev.mjs` finds an open port at or above 3000 and spawns `next dev`. Removed hardcoded `NEXTAUTH_URL` from `.env.example` and added a comment explaining NextAuth derives from request headers in dev when unset.
+  - `pnpm dev:fixed` retained as escape hatch for the legacy fixed-port behavior.
+  - Required a one-time `rm -rf .next` to clear a stale Turbopack persistence cache after the schema reset.
+- **Week 2 closed.** End-to-end UX path is functional with canned output: a user can sign in, navigate to `/app/listing-generator`, upload a photo, fill the form, generate, and see structured output. Quota gating works. The next milestone is **week 3 — replace the stub with a real LLM call**.
+
 ## 2026-05-01 (week 1 complete)
 
 - **W1-A3 / W1-A5 / W1-A6 complete and verified.**
